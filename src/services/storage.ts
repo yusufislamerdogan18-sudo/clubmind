@@ -477,7 +477,7 @@ export const StorageService = {
     const docs = this.getDocuments();
     const newDoc: ClubDocument = {
       ...doc,
-      id: `doc-${Date.now()}`,
+      id: `doc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       createdAt: new Date().toISOString(),
     };
     const updated = [newDoc, ...docs];
@@ -508,7 +508,7 @@ export const StorageService = {
     const projects = this.getProjects();
     const newProject: HistoricalProject = {
       ...project,
-      id: `proj-${Date.now()}`,
+      id: `proj-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     };
     const updated = [newProject, ...projects];
     localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(updated));
@@ -538,7 +538,7 @@ export const StorageService = {
     const lessons = this.getLessons();
     const newLesson: LessonLearned = {
       ...lesson,
-      id: `lesson-${Date.now()}`,
+      id: `lesson-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     };
     const updated = [newLesson, ...lessons];
     localStorage.setItem(STORAGE_KEYS.LESSONS, JSON.stringify(updated));
@@ -568,7 +568,7 @@ export const StorageService = {
     const ideas = this.getIdeas();
     const newIdea: ProjectIdea = {
       ...idea,
-      id: `idea-${Date.now()}`,
+      id: `idea-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       createdAt: new Date().toISOString(),
     };
     const updated = [newIdea, ...ideas];
@@ -599,7 +599,7 @@ export const StorageService = {
     const evals = this.getEvaluations();
     const newEval: IdeaEvaluation = {
       ...evaluation,
-      id: `eval-${Date.now()}`,
+      id: `eval-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       evaluatedAt: new Date().toISOString(),
     };
     // Replace if same idea exists, else prepend
@@ -627,7 +627,7 @@ export const StorageService = {
     const blueprints = this.getBlueprints();
     const newBp: ProjectBlueprint = {
       ...blueprint,
-      id: `bp-${Date.now()}`,
+      id: `bp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       createdAt: new Date().toISOString(),
     };
     const filtered = blueprints.filter(b => b.ideaId !== blueprint.ideaId);
