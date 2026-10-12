@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Database, Lightbulb, Scale, History, Plus, 
-  ArrowRight, Sparkles, CheckCircle2, TrendingUp, AlertTriangle, BookOpen 
+  ArrowRight, Sparkles, CheckCircle2, TrendingUp, AlertTriangle, BookOpen, Layers, Play 
 } from 'lucide-react';
 import { ClubDocument, ProjectIdea, IdeaEvaluation, HistoricalProject, LessonLearned } from '../types';
 import { NavTab } from './Sidebar';
@@ -27,130 +27,146 @@ export default function DashboardView({
   onSelectIdeaForEvaluation,
   onSelectIdeaForBlueprint,
 }: DashboardViewProps) {
-  // Sort highest scoring evaluated ideas
   const highestScoring = [...evaluations].sort((a, b) => b.overallScore - a.overallScore).slice(0, 3);
   const recentDocs = [...documents].slice(0, 3);
-  const recentIdeas = [...ideas].slice(0, 3);
+
+  const steps = [
+    { num: '01', title: 'Hafıza & Notlar', desc: 'Kararları ve toplantı tutanaklarını kaydet', tab: 'clubmind' as NavTab, icon: Database },
+    { num: '02', title: 'Geçmiş Dersler', desc: 'Eski hataları ve başarıları analiz et', tab: 'retrospective' as NavTab, icon: History },
+    { num: '03', title: 'Fikir & Puanlama', desc: 'Derslere dayalı fikir üret ve 5 kriterle puanla', tab: 'ideascore' as NavTab, icon: Scale },
+    { num: '04', title: 'MVP Planı & Sunum', desc: 'Görev listesi ve 2.5 dk jüri senaryosunu al', tab: 'blueprint' as NavTab, icon: Play },
+  ];
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-7xl mx-auto">
-      {/* Welcome Hero Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            Piri Reis Üniversitesi Blockchain Kulübü
+    <div className="space-y-8 animate-slide-up max-w-6xl mx-auto">
+      {/* Sleek Hero Welcome */}
+      <div className="relative rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-indigo-950/40 border border-slate-800/80 overflow-hidden shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="max-w-xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              Piri Reis Üniversitesi Blockchain Kulübü
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              ClubMind Karar Destek Portalı
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Kulüp hafızasını koruyun, geçmiş proje hatalarından ders çıkarın ve en yüksek puanlı fikirleri tek tıkla çalışan bir MVP planına dönüştürün.
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-            ClubMind: Yapay Zeka Destekli Kulüp Hafızası & Karar Portalı
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-            Geçmiş projelerin derslerini koruyun, yeni proje fikirleri keşfedin, şeffaf kriterlerle puanlayın ve kazanan fikirleri 1 tıkla MVP geliştirme planına dönüştürün.
-          </p>
 
-          <div className="flex flex-wrap items-center gap-3 mt-6">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               onClick={() => onNavigate('ideaforge')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all duration-200 hover:scale-[1.02] cursor-pointer"
             >
               <Lightbulb className="w-4 h-4" />
               Yeni Fikir Üret
             </button>
             <button
               onClick={() => onNavigate('clubmind')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700/80 transition-all duration-200 cursor-pointer"
             >
               <Plus className="w-4 h-4 text-cyan-400" />
-              Doküman / Not Ekle
-            </button>
-            <button
-              onClick={() => onNavigate('retrospective')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-slate-800 transition cursor-pointer"
-            >
-              <History className="w-4 h-4 text-amber-400" />
-              Dersler Kütüphanesi
+              Hafızaya Not Ekle
             </button>
           </div>
         </div>
       </div>
 
-      {/* Real Application Metrics Derived from Data */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-            <span>Kulüp Hafızası</span>
-            <Database className="w-4 h-4 text-cyan-400" />
-          </div>
-          <div className="text-2xl font-black text-white font-mono">{documents.length}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Kayıtlı Doküman & Karar</div>
+      {/* "İlk Bakışta Nasıl Çalışır?" 4-Step Interactive Flow */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            ClubMind 4 Adımlı Karar Akışı
+          </span>
+          <span className="text-[11px] text-slate-400">
+            Adımlara tıklayarak doğrudan o modüle geçebilirsiniz
+          </span>
         </div>
 
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-            <span>Üretilen Fikirler</span>
-            <Lightbulb className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="text-2xl font-black text-amber-300 font-mono">{ideas.length}</div>
-          <div className="text-[11px] text-slate-400 mt-1">IdeaForge Havuzu</div>
-        </div>
-
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-            <span>Değerlendirilen</span>
-            <Scale className="w-4 h-4 text-purple-400" />
-          </div>
-          <div className="text-2xl font-black text-purple-300 font-mono">{evaluations.length}</div>
-          <div className="text-[11px] text-slate-400 mt-1">IdeaScore Analizi</div>
-        </div>
-
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-            <span>Geçmiş Projeler</span>
-            <History className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="text-2xl font-black text-indigo-300 font-mono">{projects.length}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Retrospektif Kaydı</div>
-        </div>
-
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-            <span>Kurumsal Dersler</span>
-            <BookOpen className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-black text-emerald-400 font-mono">{lessons.length}</div>
-          <div className="text-[11px] text-slate-400 mt-1">Tekrar Edilebilir İlke</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {steps.map((st, i) => {
+            const Icon = st.icon;
+            return (
+              <div
+                key={i}
+                onClick={() => onNavigate(st.tab)}
+                className="hover-card group p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 cursor-pointer flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-xs font-black text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md">
+                      {st.num}
+                    </span>
+                    <Icon className="w-4 h-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+                  </div>
+                  <h3 className="font-bold text-sm text-white group-hover:text-indigo-300 transition-colors">
+                    {st.title}
+                  </h3>
+                  <p className="text-[11px] text-slate-400 mt-1 leading-snug">
+                    {st.desc}
+                  </p>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-800/40 flex items-center gap-1 text-[11px] font-semibold text-indigo-400 group-hover:translate-x-1 transition-transform">
+                  <span>Modüle Git</span>
+                  <ArrowRight className="w-3 h-3" />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Main Grid: Pipelines, High Scoring, and Recents */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Highest Scoring Ideas & Active Pipeline */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* Top Scoring Ideas */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-4">
+      {/* Key Metrics (Sade ve Temiz) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {[
+          { label: 'Hafıza Dokümanı', val: documents.length, icon: Database, color: 'text-cyan-400' },
+          { label: 'Üretilen Fikir', val: ideas.length, icon: Lightbulb, color: 'text-amber-400' },
+          { label: 'Puanlanan Proje', val: evaluations.length, icon: Scale, color: 'text-purple-400' },
+          { label: 'Geçmiş Proje', val: projects.length, icon: History, color: 'text-indigo-400' },
+          { label: 'Kurumsal İlke', val: lessons.length, icon: BookOpen, color: 'text-emerald-400' },
+        ].map((m, idx) => {
+          const Icon = m.icon;
+          return (
+            <div key={idx} className="hover-card p-4 rounded-2xl bg-slate-900/50 border border-slate-800/70">
+              <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
+                <span>{m.label}</span>
+                <Icon className={`w-3.5 h-3.5 ${m.color}`} />
+              </div>
+              <div className="text-2xl font-black text-white font-mono">{m.val}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Main 2-Column Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Highest Scoring Ideas */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="font-bold text-base text-white flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-amber-400" />
-                  En Yüksek Skorlu Proje Fikirleri
+                  En Yüksek Skorlu Fikirler
                 </h3>
                 <p className="text-xs text-slate-400">
-                  IdeaScore 5 kriterli şeffaf değerlendirmesinde öne çıkanlar.
+                  IdeaScore 5 kriterli analizinde öne çıkan adaylar:
                 </p>
               </div>
               <button
                 onClick={() => onNavigate('ideascore')}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition cursor-pointer"
               >
-                Tümü <ArrowRight className="w-3 h-3" />
+                Tümü →
               </button>
             </div>
 
             <div className="space-y-3">
               {highestScoring.length === 0 ? (
-                <div className="p-6 text-center text-xs text-slate-500 bg-slate-950/60 rounded-2xl">
-                  Henüz değerlendirilmiş fikir bulunmuyor.
+                <div className="p-6 text-center text-xs text-slate-500">
+                  Henüz puanlanmış fikir bulunmuyor.
                 </div>
               ) : (
                 highestScoring.map((item) => {
@@ -158,23 +174,19 @@ export default function DashboardView({
                   return (
                     <div
                       key={item.id}
-                      className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition flex items-center justify-between gap-4"
+                      className="hover-card p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between gap-4"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-bold text-sm text-white truncate">
                             {item.ideaName}
                           </span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                            item.recommendation === 'Strong Candidate'
-                              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                              : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                          }`}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                             {item.recommendation}
                           </span>
                         </div>
                         <div className="text-xs text-slate-400 truncate">
-                          {idea?.pitch || 'Değerlendirilmiş kulüp projesi'}
+                          {idea?.pitch || 'Kulüp projesi'}
                         </div>
                       </div>
 
@@ -183,7 +195,7 @@ export default function DashboardView({
                           <div className="text-lg font-black font-mono text-indigo-400">
                             {item.overallScore}
                           </div>
-                          <div className="text-[10px] text-slate-400">/ 100 Puan</div>
+                          <div className="text-[10px] text-slate-400">/ 100</div>
                         </div>
 
                         {idea && (
@@ -191,7 +203,7 @@ export default function DashboardView({
                             onClick={() => onSelectIdeaForBlueprint(idea)}
                             className="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition cursor-pointer"
                           >
-                            Planı Aç
+                            Planı Gör
                           </button>
                         )}
                       </div>
@@ -201,52 +213,15 @@ export default function DashboardView({
               )}
             </div>
           </div>
-
-          {/* Project Pipeline Visualizer */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6">
-            <h3 className="text-base font-bold text-white mb-2">
-              Proje ve Karar Akışı Hattı (Pipeline)
-            </h3>
-            <p className="text-xs text-slate-400 mb-5">
-              Kulüp hafızasından çalışan MVP'ye uzanan 4 adımlı kurumsal süreç:
-            </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-cyan-400 font-bold uppercase">1. Adım</span>
-                <div className="font-bold text-white">Hafıza & Not</div>
-                <div className="text-[11px] text-slate-400">{documents.length} Doküman</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-amber-400 font-bold uppercase">2. Adım</span>
-                <div className="font-bold text-white">IdeaForge</div>
-                <div className="text-[11px] text-slate-400">{ideas.length} Fikir</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-purple-400 font-bold uppercase">3. Adım</span>
-                <div className="font-bold text-white">IdeaScore</div>
-                <div className="text-[11px] text-slate-400">{evaluations.length} Puanlama</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase">4. Adım</span>
-                <div className="font-bold text-white">Blueprint</div>
-                <div className="text-[11px] text-slate-400">Çalışan MVP</div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Right Column: Historical Lessons Highlight & Recent Documents */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Institutional Learning Highlights */}
-          <div className="bg-gradient-to-b from-amber-950/30 via-slate-900 to-slate-950 border border-amber-500/30 rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-3">
+        {/* Right Column: Lessons Learned Highlight */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 space-y-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
-                <h3 className="text-base font-bold text-white">
+                <h3 className="font-bold text-base text-white">
                   Öne Çıkan Kurumsal Dersler
                 </h3>
               </div>
@@ -254,16 +229,13 @@ export default function DashboardView({
                 onClick={() => onNavigate('retrospective')}
                 className="text-xs text-amber-400 hover:underline font-semibold cursor-pointer"
               >
-                Tümünü Gör
+                Dersler →
               </button>
             </div>
-            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-              Geçmiş kulüp projelerindeki hatalardan ve başarılardan derlenen çıkarımlar:
-            </p>
 
             <div className="space-y-3">
               {lessons.slice(0, 3).map((l) => (
-                <div key={l.id} className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs space-y-1.5">
+                <div key={l.id} className="hover-card p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-xs space-y-1">
                   <div className="font-bold text-amber-300 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                     {l.title}
@@ -273,40 +245,6 @@ export default function DashboardView({
                   </p>
                   <div className="text-[10px] text-slate-400 font-mono">
                     Kaynak: {l.projectName}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent Documents */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Database className="w-4 h-4 text-cyan-400" />
-                Son Eklenen Dokümanlar
-              </h3>
-              <button
-                onClick={() => onNavigate('clubmind')}
-                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer"
-              >
-                Hepsini Aç
-              </button>
-            </div>
-
-            <div className="space-y-2.5">
-              {recentDocs.map((doc) => (
-                <div key={doc.id} className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-white truncate max-w-[200px]">
-                      {doc.title}
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-cyan-400 font-mono">
-                      {doc.category}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 truncate">
-                    {doc.content.substring(0, 70)}...
                   </div>
                 </div>
               ))}

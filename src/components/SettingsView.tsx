@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Settings, Scale, Sparkles, RotateCcw, CheckCircle2, 
-  AlertTriangle, Key, Shield, Info 
+  AlertTriangle, Key 
 } from 'lucide-react';
 import { AppSettings, CriteriaWeights } from '../types';
 
@@ -53,7 +53,7 @@ export default function SettingsView({
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-4xl mx-auto">
+    <div className="space-y-8 animate-slide-up max-w-4xl mx-auto">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
@@ -68,14 +68,14 @@ export default function SettingsView({
           Platform Ayarları
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          IdeaScore ağırlıklarını özelleştirin, yapay zeka modunu belirleyin veya örnek verileri sıfırlayın.
+          IdeaScore kriter ağırlıklarını özelleştirin, yapay zeka modunu belirleyin veya örnek verileri sıfırlayın.
         </p>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Criteria Weights Customizer */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/70 border border-slate-800/80 shadow-xl space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-4">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Scale className="w-4 h-4 text-purple-400" />
@@ -88,8 +88,8 @@ export default function SettingsView({
 
             <div className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold flex items-center gap-2 ${
               isWeightValid
-                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                : 'bg-rose-500/15 text-rose-400 border border-rose-500/20'
             }`}>
               <span>Toplam Ağırlık:</span>
               <span>%{totalWeight}</span>
@@ -98,7 +98,7 @@ export default function SettingsView({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
               <div className="flex justify-between font-bold text-slate-200">
                 <span>1. Kulübe Fayda:</span>
                 <span className="font-mono text-purple-400">%{weights.clubValue}</span>
@@ -109,11 +109,11 @@ export default function SettingsView({
                 max="100"
                 value={weights.clubValue}
                 onChange={(e) => setWeights({ ...weights, clubValue: Number(e.target.value) })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-white"
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
               <div className="flex justify-between font-bold text-slate-200">
                 <span>2. Özgünlük:</span>
                 <span className="font-mono text-purple-400">%{weights.novelty}</span>
@@ -124,11 +124,11 @@ export default function SettingsView({
                 max="100"
                 value={weights.novelty}
                 onChange={(e) => setWeights({ ...weights, novelty: Number(e.target.value) })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-white"
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
               <div className="flex justify-between font-bold text-slate-200">
                 <span>3. Süre İçi Uygulanabilirlik:</span>
                 <span className="font-mono text-purple-400">%{weights.feasibility}</span>
@@ -139,11 +139,11 @@ export default function SettingsView({
                 max="100"
                 value={weights.feasibility}
                 onChange={(e) => setWeights({ ...weights, feasibility: Number(e.target.value) })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-white"
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
               <div className="flex justify-between font-bold text-slate-200">
                 <span>4. Teknik Erişilebilirlik:</span>
                 <span className="font-mono text-purple-400">%{weights.technicalAccessibility}</span>
@@ -154,11 +154,11 @@ export default function SettingsView({
                 max="100"
                 value={weights.technicalAccessibility}
                 onChange={(e) => setWeights({ ...weights, technicalAccessibility: Number(e.target.value) })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-white"
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 sm:col-span-2">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 sm:col-span-2">
               <div className="flex justify-between font-bold text-slate-200">
                 <span>5. Anlamlı Blokzincir Kullanımı:</span>
                 <span className="font-mono text-purple-400">%{weights.blockchainRelevance}</span>
@@ -169,15 +169,15 @@ export default function SettingsView({
                 max="100"
                 value={weights.blockchainRelevance}
                 onChange={(e) => setWeights({ ...weights, blockchainRelevance: Number(e.target.value) })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-white"
               />
             </div>
           </div>
         </div>
 
-        {/* AI Provider Settings */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        {/* AI Mode Card */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/70 border border-slate-800/80 shadow-xl space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800/60 pb-4">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-400" />
@@ -190,11 +190,11 @@ export default function SettingsView({
           </div>
 
           <div className="space-y-4 text-xs">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-950 border border-slate-800">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-950/70 border border-slate-800">
               <div>
-                <div className="font-bold text-white">Demo Modunu Kullan</div>
+                <div className="font-bold text-white">Demo Modu (Simüle AI)</div>
                 <div className="text-slate-400 text-[11px]">
-                  Aktif olduğunda internet bağlantısı veya API anahtarı gerekmez.
+                  İnternet bağlantısı veya API anahtarı gerekmez.
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -209,7 +209,7 @@ export default function SettingsView({
             </div>
 
             {!isDemoMode && (
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
                 <label className="block text-slate-300 font-bold flex items-center gap-1.5">
                   <Key className="w-4 h-4 text-amber-400" />
                   Gemini / OpenAI API Anahtarı
@@ -221,9 +221,6 @@ export default function SettingsView({
                   onChange={(e) => setApiKey(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
-                <p className="text-[11px] text-slate-500">
-                  Anahtarınız yalnızca tarayıcınızın yerel belleğinde saklanır; harici sunucuya iletilmez.
-                </p>
               </div>
             )}
           </div>
@@ -234,7 +231,7 @@ export default function SettingsView({
           <button
             type="button"
             onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-800 text-xs font-semibold transition cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900/80 hover:bg-rose-950/30 text-slate-400 hover:text-rose-400 border border-slate-800 text-xs font-semibold transition cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             Örnek Demo Verilerini Sıfırla
@@ -243,23 +240,23 @@ export default function SettingsView({
           <button
             type="submit"
             disabled={!isWeightValid}
-            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all duration-200 hover:scale-[1.02] cursor-pointer disabled:opacity-50"
           >
             Ayarları Kaydet
           </button>
         </div>
 
         {saveSuccess && (
-          <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold text-center animate-fadeIn">
-            ✓ Ayarlar başarıyla kaydedildi!
+          <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-bold text-center animate-slide-up">
+            ✓ Ayarlar başarıyla güncellendi!
           </div>
         )}
       </form>
 
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+          <div className="animate-scale-in bg-slate-900 border border-slate-700/80 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-xs">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
               Demo Verilerini Sıfırla
