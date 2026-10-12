@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar, { NavTab } from './components/Sidebar';
-import DashboardView from './components/DashboardView';
-import ClubMindView from './components/ClubMindView';
-import RetrospectiveView from './components/RetrospectiveView';
+import Navbar, { NavTab } from './components/Navbar';
+import TerminalView from './components/TerminalView';
 import IdeaForgeView from './components/IdeaForgeView';
 import IdeaScoreView from './components/IdeaScoreView';
 import BlueprintView from './components/BlueprintView';
+import VaultView from './components/VaultView';
+import RetroView from './components/RetroView';
 import SettingsView from './components/SettingsView';
 import { StorageService } from './services/storage';
 import { 
   ClubDocument, HistoricalProject, LessonLearned, 
   ProjectIdea, IdeaEvaluation, ProjectBlueprint, AppSettings 
 } from './types';
-import { Menu, X, Anchor, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<NavTab>('terminal');
 
   // Core Application State
   const [documents, setDocuments] = useState<ClubDocument[]>([]);
@@ -143,154 +142,101 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Toast Notification Banner */}
+    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black web3-grid pb-12">
+      {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-indigo-600 text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-2xl animate-fadeIn flex items-center gap-2 border border-indigo-400">
+        <div className="fixed top-5 right-5 z-50 bg-indigo-600/90 backdrop-blur-md text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 border border-indigo-400 animate-slide-up">
           <Sparkles className="w-4 h-4 text-cyan-300" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Desktop Persistent Sidebar */}
-      <div className="hidden lg:block shrink-0">
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isDemoMode={settings.isDemoMode}
-        />
-      </div>
+      {/* Floating Web3 Top Navbar */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isDemoMode={settings.isDemoMode}
+      />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header Bar */}
-        <header className="lg:hidden sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-base">
-              ⚓
-            </div>
-            <div>
-              <span className="font-extrabold text-sm text-white">ClubMind</span>
-              <span className="text-[10px] text-slate-400 ml-1.5">PRU Blockchain</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </header>
-
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden bg-slate-950 border-b border-slate-800 p-4 space-y-1">
-            {[
-              { id: 'dashboard' as NavTab, label: 'Genel Bakış' },
-              { id: 'clubmind' as NavTab, label: 'ClubMind Hafızası' },
-              { id: 'retrospective' as NavTab, label: 'Retrospektif & Dersler' },
-              { id: 'ideaforge' as NavTab, label: 'IdeaForge' },
-              { id: 'ideascore' as NavTab, label: 'IdeaScore' },
-              { id: 'blueprint' as NavTab, label: 'Project Blueprint' },
-              { id: 'settings' as NavTab, label: 'Ayarlar' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold ${
-                  activeTab === tab.id ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6">
+        {activeTab === 'terminal' && (
+          <TerminalView
+            documents={documents}
+            ideas={ideas}
+            evaluations={evaluations}
+            projects={projects}
+            lessons={lessons}
+            onNavigate={setActiveTab}
+            onSelectIdeaForEvaluation={handleSendToScore}
+            onSelectIdeaForBlueprint={handleSelectForBlueprint}
+          />
         )}
 
-        {/* Viewport Router */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {activeTab === 'dashboard' && (
-            <DashboardView
-              documents={documents}
-              ideas={ideas}
-              evaluations={evaluations}
-              projects={projects}
-              lessons={lessons}
-              onNavigate={setActiveTab}
-              onSelectIdeaForEvaluation={handleSendToScore}
-              onSelectIdeaForBlueprint={handleSelectForBlueprint}
-            />
-          )}
+        {activeTab === 'ideaforge' && (
+          <IdeaForgeView
+            ideas={ideas}
+            documents={documents}
+            lessons={lessons}
+            onAddIdea={handleAddIdea}
+            onDeleteIdea={handleDeleteIdea}
+            onSendToScore={handleSendToScore}
+            isDemoMode={settings.isDemoMode}
+          />
+        )}
 
-          {activeTab === 'clubmind' && (
-            <ClubMindView
-              documents={documents}
-              onAddDocument={handleAddDocument}
-              onDeleteDocument={handleDeleteDocument}
-              isDemoMode={settings.isDemoMode}
-            />
-          )}
+        {activeTab === 'ideascore' && (
+          <IdeaScoreView
+            ideas={ideas}
+            evaluations={evaluations}
+            projects={projects}
+            lessons={lessons}
+            weights={settings.criteriaWeights}
+            onSaveEvaluation={handleSaveEvaluation}
+            onSelectForBlueprint={handleSelectForBlueprint}
+            preselectedIdea={preselectedIdeaForScore}
+            isDemoMode={settings.isDemoMode}
+          />
+        )}
 
-          {activeTab === 'retrospective' && (
-            <RetrospectiveView
-              projects={projects}
-              lessons={lessons}
-              onAddProject={handleAddProject}
-              onAddLesson={handleAddLesson}
-              onDeleteLesson={handleDeleteLesson}
-            />
-          )}
+        {activeTab === 'blueprint' && (
+          <BlueprintView
+            ideas={ideas}
+            blueprints={blueprints}
+            lessons={lessons}
+            onSaveBlueprint={handleSaveBlueprint}
+            onUpdateTask={handleUpdateTask}
+            preselectedIdea={preselectedIdeaForBlueprint}
+          />
+        )}
 
-          {activeTab === 'ideaforge' && (
-            <IdeaForgeView
-              ideas={ideas}
-              documents={documents}
-              lessons={lessons}
-              onAddIdea={handleAddIdea}
-              onDeleteIdea={handleDeleteIdea}
-              onSendToScore={handleSendToScore}
-              isDemoMode={settings.isDemoMode}
-            />
-          )}
+        {activeTab === 'vault' && (
+          <VaultView
+            documents={documents}
+            onAddDocument={handleAddDocument}
+            onDeleteDocument={handleDeleteDocument}
+            isDemoMode={settings.isDemoMode}
+          />
+        )}
 
-          {activeTab === 'ideascore' && (
-            <IdeaScoreView
-              ideas={ideas}
-              evaluations={evaluations}
-              projects={projects}
-              lessons={lessons}
-              weights={settings.criteriaWeights}
-              onSaveEvaluation={handleSaveEvaluation}
-              onSelectForBlueprint={handleSelectForBlueprint}
-              preselectedIdea={preselectedIdeaForScore}
-              isDemoMode={settings.isDemoMode}
-            />
-          )}
+        {activeTab === 'retro' && (
+          <RetroView
+            projects={projects}
+            lessons={lessons}
+            onAddProject={handleAddProject}
+            onAddLesson={handleAddLesson}
+            onDeleteLesson={handleDeleteLesson}
+          />
+        )}
 
-          {activeTab === 'blueprint' && (
-            <BlueprintView
-              ideas={ideas}
-              blueprints={blueprints}
-              lessons={lessons}
-              onSaveBlueprint={handleSaveBlueprint}
-              onUpdateTask={handleUpdateTask}
-              preselectedIdea={preselectedIdeaForBlueprint}
-            />
-          )}
-
-          {activeTab === 'settings' && (
-            <SettingsView
-              settings={settings}
-              onUpdateSettings={handleUpdateSettings}
-              onResetData={handleResetData}
-            />
-          )}
-        </main>
-      </div>
+        {activeTab === 'settings' && (
+          <SettingsView
+            settings={settings}
+            onUpdateSettings={handleUpdateSettings}
+            onResetData={handleResetData}
+          />
+        )}
+      </main>
     </div>
   );
 }

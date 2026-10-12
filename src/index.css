@@ -5,91 +5,72 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-indigo-500 selection:text-white;
-    background-color: #0b0f17;
+    @apply bg-[#07090e] text-slate-100 font-sans antialiased min-h-screen selection:bg-cyan-500 selection:text-black;
+    background-color: #07090e;
     background-image: 
-      radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
-      radial-gradient(circle at 85% 25%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
-      radial-gradient(circle at 50% 85%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+      radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 90% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+      radial-gradient(circle at 10% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 45%);
     background-attachment: fixed;
   }
 }
 
-/* Custom soft scrollbars */
+/* Subtle Web3 Grid Background */
+.web3-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Premium Frosted Glass Card */
+.glass-card {
+  background: rgba(13, 17, 28, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px rgba(99, 102, 241, 0.2);
+}
+
+/* Glowing Button */
+.btn-glow {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.btn-glow:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.6);
+}
+
+.btn-glow:active {
+  transform: scale(0.98);
+}
+
+/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(11, 15, 23, 0.5);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.5);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.7);
+  background: rgba(99, 102, 241, 0.6);
 }
 
-/* Motion Design Utilities */
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.04);
-  }
-}
-
-.animate-slide-up {
-  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
-}
-
-/* Clean, soft hover card effect */
-.hover-card {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hover-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.15);
-}
-
-/* Glass panel */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
 }

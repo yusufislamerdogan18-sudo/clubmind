@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { 
   Scale, Sparkles, AlertTriangle, CheckCircle2, 
-  Columns, ArrowRight, History, Info, FileCode2 
+  Columns, ArrowRight, ShieldCheck, Zap, FileCode2,
+  TrendingUp, Award, Layers
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { 
   ProjectIdea, IdeaEvaluation, HistoricalProject, 
-  LessonLearned, CriteriaWeights 
+  LessonLearned, CriteriaWeights, CriteriaScores 
 } from '../types';
 import { AIService } from '../services/ai';
 
@@ -63,6 +65,18 @@ export default function IdeaScoreView({
         historicalLessonsAnalysis: evalRes.historicalLessonsAnalysis,
         isSimulated: isDemoMode,
       });
+
+      // Trigger Web3 celebration confetti
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#06b6d4', '#6366f1', '#a855f7'],
+        });
+      } catch (e) {
+        // silent fallback
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -75,113 +89,125 @@ export default function IdeaScoreView({
   const idea1 = ideas.find(i => i.id === compareIdeaId1);
   const idea2 = ideas.find(i => i.id === compareIdeaId2);
 
+  // SVG Gauge calculations
+  const score = existingEval ? Math.round(existingEval.overallScore) : 0;
+  const strokeDashoffset = 314 - (314 * score) / 100; // circumference ~ 2 * pi * 50 = 314
+
+  const criteriaList: { key: keyof CriteriaScores; label: string; weight: number; icon: string }[] = [
+    { key: 'novelty', label: 'İnovasyon & Özgünlük', weight: weights.novelty || 25, icon: '🚀' },
+    { key: 'feasibility', label: 'Yapılabilirlik (48s)', weight: weights.feasibility || 20, icon: '🛠️' },
+    { key: 'clubValue', label: 'PRU Kulüp & Liman Uyumu', weight: weights.clubValue || 30, icon: '⚓' },
+    { key: 'technicalAccessibility', label: 'Ekip Yetkinliği', weight: weights.technicalAccessibility || 15, icon: '👥' },
+    { key: 'blockchainRelevance', label: 'Jüri & Web3 Etkisi', weight: weights.blockchainRelevance || 10, icon: '🏆' },
+  ];
+
   return (
-    <div className="space-y-8 animate-slide-up max-w-6xl mx-auto">
-      {/* Header */}
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1 rounded-lg bg-purple-500/10 text-purple-400">
-              <Scale className="w-4 h-4" />
-            </span>
-            <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
-              5 Kriterli Şeffaf Karar Motoru
-            </span>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+            <Scale className="w-3 h-3" />
+            IdeaScore 5.0 Decision Engine
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            IdeaScore Fikir Değerlendirme & Kıyaslama
+            5 Kriterli Puanlama & Jüri Analizi
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Fikirleri şeffaf ağırlıklarla 100 üzerinden puanlayın, risklerini görün ve alternatiflerle yan yana kıyaslayın.
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            Önyargısız yapay zeka jüri motoruyla projeleri derecelendirin ve riski minimize edin.
           </p>
         </div>
 
         <button
           onClick={() => setShowComparison(!showComparison)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700/80 transition cursor-pointer self-start sm:self-auto"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 font-semibold text-xs border border-white/[0.08] transition cursor-pointer self-start sm:self-auto"
         >
-          <Columns className="w-4 h-4 text-purple-400" />
-          {showComparison ? 'Tekli Analize Dön' : 'Yan Yana Kıyasla (Compare)'}
+          <Columns className="w-4 h-4 text-cyan-400" />
+          {showComparison ? 'Tekli Analize Dön' : 'Yan Yana Kıyasla'}
         </button>
       </div>
 
-      {/* COMPARISON VIEW */}
+      {/* Comparison View */}
       {showComparison ? (
-        <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800/80 space-y-6 shadow-xl">
+        <div className="glass-card rounded-3xl p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs mb-1 font-semibold">1. Fikir:</label>
+              <label className="block text-slate-400 text-xs mb-1.5 font-semibold">1. Fikir:</label>
               <select
                 value={compareIdeaId1}
                 onChange={(e) => setCompareIdeaId1(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white"
               >
                 {ideas.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
               </select>
             </div>
-
             <div>
-              <label className="block text-slate-400 text-xs mb-1 font-semibold">2. Fikir:</label>
+              <label className="block text-slate-400 text-xs mb-1.5 font-semibold">2. Fikir:</label>
               <select
                 value={compareIdeaId2}
                 onChange={(e) => setCompareIdeaId2(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-slate-950/80 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white"
               >
                 {ideas.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
               </select>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               { id: idea1, evalData: eval1 },
               { id: idea2, evalData: eval2 }
             ].map((col, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800/80 space-y-4">
+              <div key={idx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-bold text-white text-base">{col.id?.name}</h3>
-                    <p className="text-xs text-slate-400 italic mt-0.5">"{col.id?.pitch}"</p>
+                    <h3 className="font-black text-white text-base">{col.id?.name}</h3>
+                    <p className="text-xs text-slate-400 line-clamp-2 mt-1">{col.id?.pitch}</p>
                   </div>
-                  <div className="text-right shrink-0">
-                    <span className="text-2xl font-black font-mono text-purple-400">
-                      {col.evalData ? col.evalData.overallScore : '—'}
+                  <div className="text-right shrink-0 ml-3">
+                    <span className="text-3xl font-black font-mono text-cyan-400">
+                      {col.evalData ? col.evalData.overallScore.toFixed(1) : '—'}
                     </span>
-                    <span className="text-[10px] text-slate-500 block">/ 100</span>
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold">/ 100</span>
                   </div>
                 </div>
 
                 {col.evalData ? (
-                  <div className="space-y-2 text-xs pt-2 border-t border-slate-800/60">
-                    <div className="flex justify-between"><span>Kulübe Fayda (%{weights.clubValue}):</span><span className="font-mono text-white font-bold">{col.evalData.criteriaScores.clubValue}/100</span></div>
-                    <div className="flex justify-between"><span>Özgünlük (%{weights.novelty}):</span><span className="font-mono text-white font-bold">{col.evalData.criteriaScores.novelty}/100</span></div>
-                    <div className="flex justify-between"><span>Uygulanabilirlik (%{weights.feasibility}):</span><span className="font-mono text-white font-bold">{col.evalData.criteriaScores.feasibility}/100</span></div>
-                    <div className="flex justify-between"><span>Teknik Erişilebilirlik (%{weights.technicalAccessibility}):</span><span className="font-mono text-white font-bold">{col.evalData.criteriaScores.technicalAccessibility}/100</span></div>
-                    <div className="flex justify-between"><span>Blokzincir Uygunluğu (%{weights.blockchainRelevance}):</span><span className="font-mono text-white font-bold">{col.evalData.criteriaScores.blockchainRelevance}/100</span></div>
-                    
-                    <div className="pt-2 text-[11px] text-slate-300 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
-                      <span className="text-emerald-400 font-bold block mb-0.5">Güçlü Yön:</span>
-                      {col.evalData.strengths[0]}
+                  <div className="space-y-2.5 pt-3 border-t border-white/[0.06] text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">İnovasyon:</span>
+                      <span className="font-mono text-white font-bold">{col.evalData.criteriaScores.novelty} / 100</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">Yapılabilirlik:</span>
+                      <span className="font-mono text-white font-bold">{col.evalData.criteriaScores.feasibility} / 100</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">PRU Uyumu:</span>
+                      <span className="font-mono text-white font-bold">{col.evalData.criteriaScores.clubValue} / 100</span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                      ✓ {col.evalData.strengths[0]}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-500 py-6 text-center">Bu fikir henüz puanlanmadı.</div>
+                  <div className="text-xs text-slate-500 py-6 text-center font-mono">Puanlanmadı</div>
                 )}
               </div>
             ))}
           </div>
         </div>
       ) : (
-        /* SINGLE EVALUATION VIEW */
+        /* Single Analysis View */
         <div className="space-y-6">
-          {/* Selector Bar */}
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          {/* Quick Idea Picker Bar */}
+          <div className="glass-card rounded-2xl p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3 flex-1">
-              <span className="text-xs text-slate-400 font-semibold shrink-0">Değerlendirilecek Fikir:</span>
+              <span className="text-xs text-slate-400 font-semibold shrink-0">Hedef Proje:</span>
               <select
                 value={selectedIdeaId}
                 onChange={(e) => setSelectedIdeaId(e.target.value)}
-                className="w-full sm:max-w-md bg-slate-950 border border-slate-800 text-white text-xs font-bold rounded-xl px-3 py-2 focus:outline-none"
+                className="w-full sm:max-w-md bg-white/[0.04] border border-white/[0.08] text-white text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400"
               >
                 {ideas.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
               </select>
@@ -190,118 +216,164 @@ export default function IdeaScoreView({
             <button
               onClick={handleEvaluate}
               disabled={loading || !activeIdea}
-              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition-all duration-200 hover:scale-[1.02] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
+              className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-xs shadow-md shadow-cyan-500/20 transition cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
             >
               {loading ? (
                 <>
-                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  Puanlanıyor...
+                  <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
+                  Hesaplanıyor...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-3.5 h-3.5" />
                   {existingEval ? 'Yeniden Puanla' : 'IdeaScore ile Puanla'}
                 </>
               )}
             </button>
           </div>
 
-          {/* Results Card */}
+          {/* Results Grid */}
           {existingEval && activeIdea ? (
-            <div className="space-y-6">
-              {/* Score Header Card */}
-              <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/70 border border-slate-800/80 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
-                    {existingEval.recommendation}
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1.5">
-                    {existingEval.ideaName}
-                  </h2>
-                  <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    {activeIdea.pitch}
-                  </p>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column: Visual Score Gauge Card */}
+              <div className="glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+                <span className="text-[10px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  {existingEval.recommendation || '🔥 Güçlü Aday'}
+                </span>
 
-                <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-center shrink-0 min-w-[140px]">
-                  <div className="text-4xl font-black font-mono text-purple-400">
-                    {existingEval.overallScore}
+                {/* SVG Gauge */}
+                <div className="relative w-44 h-44 flex items-center justify-center my-2">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      fill="none"
+                      stroke="rgba(255, 255, 255, 0.08)"
+                      strokeWidth="10"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      fill="none"
+                      stroke="url(#scoreGradient)"
+                      strokeWidth="10"
+                      strokeDasharray="314"
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    <defs>
+                      <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#06b6d4" />
+                        <stop offset="50%" stopColor="#6366f1" />
+                        <stop offset="100%" stopColor="#a855f7" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+
+                  <div className="absolute flex flex-col items-center">
+                    <span className="text-4xl font-black text-white font-mono">
+                      {existingEval.overallScore.toFixed(1)}
+                    </span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      / 100
+                    </span>
                   </div>
-                  <div className="text-[10px] text-slate-500 uppercase font-bold mt-0.5">
-                    / 100 Ağırlıklı Skor
-                  </div>
-                </div>
-              </div>
-
-              {/* 5 Criteria Bars */}
-              <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 space-y-4">
-                <h3 className="font-bold text-sm text-white">5 Şeffaf Kriter Dağılımı:</h3>
-                
-                <div className="space-y-3">
-                  {[
-                    { name: '1. Kulübe Fayda', weight: weights.clubValue, score: existingEval.criteriaScores.clubValue, reason: existingEval.criteriaReasoning.clubValue },
-                    { name: '2. Özgünlük', weight: weights.novelty, score: existingEval.criteriaScores.novelty, reason: existingEval.criteriaReasoning.novelty },
-                    { name: '3. Uygulanabilirlik', weight: weights.feasibility, score: existingEval.criteriaScores.feasibility, reason: existingEval.criteriaReasoning.feasibility },
-                    { name: '4. Teknik Erişilebilirlik', weight: weights.technicalAccessibility, score: existingEval.criteriaScores.technicalAccessibility, reason: existingEval.criteriaReasoning.technicalAccessibility },
-                    { name: '5. Blokzincir Uygunluğu', weight: weights.blockchainRelevance, score: existingEval.criteriaScores.blockchainRelevance, reason: existingEval.criteriaReasoning.blockchainRelevance },
-                  ].map((c, idx) => (
-                    <div key={idx} className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 text-xs space-y-1.5">
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold text-white">{c.name} (%{c.weight})</span>
-                        <span className="font-mono font-bold text-purple-400">{c.score} / 100</span>
-                      </div>
-                      <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-purple-500 h-full rounded-full transition-all duration-500" style={{ width: `${c.score}%` }}></div>
-                      </div>
-                      <p className="text-[11px] text-slate-400">{c.reason}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Strengths & Historical Warning */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2 text-xs">
-                  <div className="text-emerald-400 font-bold uppercase text-[11px] flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Öne Çıkan Güçlü Yönler
-                  </div>
-                  <ul className="space-y-1 text-slate-300">
-                    {existingEval.strengths.map((s, i) => <li key={i}>• {s}</li>)}
-                  </ul>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2 text-xs">
-                  <div className="text-amber-400 font-bold uppercase text-[11px] flex items-center gap-1.5">
-                    <History className="w-4 h-4" />
-                    Geçmiş Projelerden Risk Uyarısı
-                  </div>
-                  <p className="text-slate-300 text-[11px] leading-relaxed">
-                    {existingEval.historicalLessonsAnalysis.recurringProblemsWarning[0]}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action */}
-              <div className="p-5 rounded-3xl bg-slate-900/70 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                  <h4 className="text-sm font-bold text-white">Bu Fikri MVP Planına Dönüştür</h4>
-                  <p className="text-xs text-slate-400">Görev listesi ve 2.5 dakikalık sunum senaryosu hazırlayın.</p>
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-white">{activeIdea.name}</h3>
+                  <p className="text-xs text-slate-400 max-w-xs">{activeIdea.pitch}</p>
                 </div>
 
                 <button
                   onClick={() => onSelectForBlueprint(activeIdea)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all duration-200 hover:scale-[1.02] cursor-pointer shrink-0"
+                  className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer flex items-center justify-center gap-2 mt-2"
                 >
                   <FileCode2 className="w-4 h-4" />
-                  Blueprint Oluştur
-                  <ArrowRight className="w-4 h-4" />
+                  Blueprint'e Dönüştür
                 </button>
+              </div>
+
+              {/* Right 2 Columns: 5 Criteria Bars & Key Insights */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* 5 Criteria Sliders */}
+                <div className="glass-card rounded-3xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-black text-white">5 Kriter Ağırlık Dağılımı</h3>
+                    <span className="text-[11px] font-mono text-cyan-400 font-bold">100 Puan Skalası</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {criteriaList.map((crit) => {
+                      const scoreVal = (existingEval.criteriaScores as any)[crit.key] || 80;
+                      return (
+                        <div key={String(crit.key)} className="space-y-1.5">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+                              <span>{crit.icon}</span>
+                              {crit.label}
+                              <span className="text-[10px] text-slate-500 font-mono">(%{crit.weight})</span>
+                            </span>
+                            <span className="font-mono font-bold text-cyan-400">{scoreVal} / 100</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-700"
+                              style={{ width: `${scoreVal}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Strengths & Lessons Mitigated */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="glass-card rounded-2xl p-4 space-y-2 border-emerald-500/20">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Güçlü Yönler
+                    </div>
+                    <div className="space-y-1.5">
+                      {existingEval.strengths.slice(0, 3).map((st, i) => (
+                        <div key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
+                          <span className="text-emerald-400">•</span>
+                          <span>{st}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="glass-card rounded-2xl p-4 space-y-2 border-amber-500/20">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                      <AlertTriangle className="w-4 h-4" />
+                      Önlenen Hatalar
+                    </div>
+                    <div className="space-y-1.5">
+                      {existingEval.historicalLessonsAnalysis?.specificMitigations?.slice(0, 2).map((ls: string, i: number) => (
+                        <div key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
+                          <span className="text-amber-400">•</span>
+                          <span>{ls}</span>
+                        </div>
+                      )) || (
+                        <div className="text-xs text-slate-400">Geçmiş proje riskleri kontrol edildi.</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="p-16 text-center text-xs text-slate-500 bg-slate-900/40 rounded-3xl border border-slate-800">
-              Fikri değerlendirmek için yukarıdaki butona tıklayın.
+            <div className="glass-card rounded-3xl p-12 text-center space-y-3">
+              <Scale className="w-10 h-10 text-cyan-400 mx-auto" />
+              <h3 className="text-base font-bold text-white">Henüz Puanlama Yapılmadı</h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Yukarıdaki "IdeaScore ile Puanla" butonuna tıklayarak yapay zeka jüri değerlendirmesini başlatın.
+              </p>
             </div>
           )}
         </div>
